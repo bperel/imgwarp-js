@@ -1,13 +1,15 @@
-var ImgWarper = ImgWarper || {};
+// Import our custom CSS
+import '../scss/styles.scss'
 
+import PointDefiner from "./point_definer.js";
 
-$(document).ready(function(){  
-  var canvas = $("#main-canvas")[0];
-  var warper = null;
+$(document).ready(function(){
+  const canvas = $("#main-canvas")[0];
+  let warper = null;
 
-  var holder = document.getElementById('drop-area');
+  const holder = document.getElementById('drop-area');
 
-  $('.allow-drag').each(function (ele) {
+  $('.allow-drag').each(function () {
     this.ondragstart = function (e) {
       e.dataTransfer.setData('text', this.src);
       console.log(e.dataTransfer.getData('text'));
@@ -29,8 +31,8 @@ $(document).ready(function(){
     e.preventDefault();
 
     if (e.dataTransfer.files.length > 0) {
-      var file = e.dataTransfer.files[0];
-      var reader = new FileReader();
+      const file = e.dataTransfer.files[0];
+      const reader = new FileReader();
       // Prevent any non-image file type from being read.
       if(!file.type.match(/image.*/)){
           console.log("The dropped file is not an image: ", file.type);
@@ -38,37 +40,32 @@ $(document).ready(function(){
       }
       reader.onload = function (event) {
         console.log(event.target);
-        var img = render(event.target.result, function (imageData) {
-          if (warper) {
-            delete warper;
-          }
-          warper = new ImgWarper.PointDefiner(canvas, img, imageData);
+        const img = render(event.target.result, function (imageData) {
+          warper = new PointDefiner(canvas, img, imageData);
         });
       };
       reader.readAsDataURL(file);
     } else {
-      var src = e.dataTransfer.getData('text');
-      var img = render(src, function (imageData) {
-        if (warper) {
-          delete warper;
-        }
-        warper = new ImgWarper.PointDefiner(canvas, img, imageData);
+      const src = e.dataTransfer.getData('text');
+      const img = render(src, function (imageData) {
+        warper = new PointDefiner(canvas, img, imageData);
       });
     }
     return false;
   };
 });
 
-var MAX_HEIGHT = 500;
+const MAX_HEIGHT = 500;
+
 function render(src, callback){
-  var image = new Image();
+  const image = new Image();
   image.onload = function(){
-    var canvas = document.getElementById("myCanvas");
+    const canvas = document.getElementById("myCanvas");
     if(image.height > MAX_HEIGHT) {
       image.width *= MAX_HEIGHT / image.height;
       image.height = MAX_HEIGHT;
     }
-    var ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     canvas.width = image.width;
     canvas.height = image.height;
